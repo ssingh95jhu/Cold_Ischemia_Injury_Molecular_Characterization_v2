@@ -60,15 +60,18 @@ Med.Down<-data.frame(read.xlsx("Codes2_Tables/Manuscript/ST1_CIS_Down_DEGs_Consi
 Med.Down.genes<-Med.Down$Gene
 Rest_Gene_UTR.Down<-intersect(Rest_Gene_UTR$Gene,Med.Down.genes)
 
-##### COMBINE OXPHOS, UP and DONREGULATED GENES ################################
+#OXPHOS vs Up vs Don Genes:
   OXPHOS_Gene_UTR1<-OXPHOS_Gene_UTR
   OXPHOS_Gene_UTR1$Trend<-'OXPHOS'
+  OXPHOS_Gene_UTR1$UTR_length<-log10(OXPHOS_Gene_UTR1$UTR_length)
   
   Rest_Gene_UTR.Up1<-Rest_Gene_UTR[Rest_Gene_UTR.Up,]
   Rest_Gene_UTR.Up1$Trend<-'Up'
+  Rest_Gene_UTR.Up1$UTR_length<-log10(Rest_Gene_UTR.Up1$UTR_length)
   
   Rest_Gene_UTR.Down1<-Rest_Gene_UTR[Rest_Gene_UTR.Down,]
   Rest_Gene_UTR.Down1$Trend<-'Down'
+  Rest_Gene_UTR.Down1$UTR_length<-log10(Rest_Gene_UTR.Down1$UTR_length)
   
   df_Med.Combine<-rbind(OXPHOS_Gene_UTR1,Rest_Gene_UTR.Up1,Rest_Gene_UTR.Down1)
   df_Med.Combine$Group<-factor(df_Med.Combine$Group, levels=c('OXPHOS', 'Not_OXPHOS'))
@@ -86,25 +89,26 @@ Rest_Gene_UTR.Down<-intersect(Rest_Gene_UTR$Gene,Med.Down.genes)
   test_p3<-paste0("p=", signif(test3$p.value,2))
   test_p3
   
-  OXPHOS_median<-paste0("M=",signif(median(OXPHOS_Gene_UTR$UTR_length),3))
+  OXPHOS_median<-paste0("M=",signif(median(OXPHOS_Gene_UTR1$UTR_length),3))
   Up_median=paste0("M=", signif(median(Rest_Gene_UTR.Up1$UTR_length),3))
   Down_median=paste0("M=", signif(median(Rest_Gene_UTR.Down1$UTR_length),3))
   
-  pdf("Codes2_Figures/Figure3/pdfs/UTR_OXPHOS_vs_Rest_All_DEGs_CIS_InnerMedulla.pdf", width=8, height=6)
+  pdf("Codes2_Figures/Figure3/pdfs/Log10_UTR_OXPHOS_vs_Rest_All_DEGs_CIS_InnerMedulla.pdf", width=8, height=6)
   ggplot(df_Med.Combine, aes(x = Trend, y = UTR_length, fill = Trend)) +
     geom_violin(trim = TRUE, alpha = 0.5) +  # Violin
     geom_boxplot(width = 0.05, fill = "white", outlier.shape = NA) +
     ggtitle("Inner_Medulla (OXPHOS vs Rest_Genes)") +
-    annotate("text", label=test_p1, x=1, y=6400, hjust=0, size=5, color="black") +
-    annotate("text", label=test_p2, x=1.9, y=7600, hjust=0, size=5, color="black") +
-    annotate("text", label=test_p3, x=2.3, y=6400, hjust=0, size=5, color="black") +
-    annotate("text", label=OXPHOS_median, x=0.5, y=2000, hjust=0, size=5, color="black") +
-    annotate("text", label=Up_median, x=1.5, y=2000, hjust=0, size=5, color="black") +
-    annotate("text", label=Down_median, x=2.5, y=2000, hjust=0, size=5, color="black") +
+    annotate("text", label=test_p1, x=1, y=4.5, hjust=0, size=5, color="black") +
+    annotate("text", label=test_p2, x=1.9, y=5.2, hjust=0, size=5, color="black") +
+    annotate("text", label=test_p3, x=2.3, y=4.5, hjust=0, size=5, color="black") +
+    annotate("text", label=OXPHOS_median, x=0.5, y=1, hjust=0, size=5, color="black") +
+    annotate("text", label=Up_median, x=1.5, y=1, hjust=0, size=5, color="black") +
+    annotate("text", label=Down_median, x=2.5, y=1, hjust=0, size=5, color="black") +
     #geom_jitter(width = 0.2, size = 0.5, alpha = 0.7) +  # Points
     theme_classic() + mytheme +
     labs(x = "Gene Group", y = "3' UTR Length (bp)") +
-    scale_fill_manual(values = c("OXPHOS" = "orange", "Up" = "red", "Down"='skyblue')) +
-    scale_y_continuous(limits = c(0,8000))
+    scale_fill_manual(values = c("OXPHOS" = "orange", "Up" = "red", "Down"='skyblue')) 
+    #scale_y_continuous(limits = c(0,8000))
   dev.off()
+  
   
